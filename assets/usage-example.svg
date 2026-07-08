@@ -17,7 +17,7 @@
   <text x="128" y="197" font-size="12.5" font-weight="600" fill="#5b6470">📞 AI가 맥락을 붙여 "설계 방"에 대신 물어봐요</text>
 
   <!-- Panel 2: 옆 방 (초록) — 맥락 붙은 질문 도착 → 설계 방 클로드가 전문 답변 (AI↔AI) -->
-  <rect x="40" y="220" width="640" height="148" rx="14" fill="#eef7f0" stroke="#a9d8ba"/>
+  <rect x="40" y="220" width="560" height="148" rx="14" fill="#eef7f0" stroke="#a9d8ba"/>
   <text x="62" y="247" font-size="14" font-weight="700" fill="#1a7f37">💬 설계 방 <tspan font-weight="400" fill="#8a93a0">· 옆 방</tspan></text>
   <text x="62" y="273" font-size="13.5" fill="#1a1a1a">🤖 클로드(구현 방): 지금 방식으로 구현 중인데, 그때 접은 다른 방식은 왜 접었지?</text>
   <text x="62" y="295" font-size="13.5" fill="#1a1a1a">🧠 클로드(설계 방): 그때 검토한 B 방식은 초반 구축은 빨라도, 규모가</text>
