@@ -1,0 +1,60 @@
+<svg viewBox="0 0 820 510" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" role="img" aria-label="핫라인 6경로 다이어그램 — 같은 앱 안은 자유롭게 주고받기, 다른 앱·터미널로 건너갈 때는 질문·답만">
+  <rect x="0" y="0" width="820" height="510" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowG" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1a7f37"/></marker>
+    <marker id="arrowA" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#b26a00"/></marker>
+    <marker id="arrowK" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#5b6470"/></marker>
+  </defs>
+
+  <!-- Zone1: 같은 앱 (초록) -->
+  <rect x="20" y="15" width="780" height="140" rx="14" fill="#eef7f0" stroke="#bfe0cb"/>
+  <text x="40" y="44" font-size="15" font-weight="700" fill="#1a7f37">🟢 같은 앱 안에서 — 자유롭게 주고받기 (바로 보이고 왕복 O)</text>
+  <rect x="40" y="65" width="170" height="32" rx="16" fill="#fff" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="125" y="86" text-anchor="middle" font-size="13" font-weight="600">클로드 앱</text>
+  <path d="M215,81 L255,81" stroke="#1a7f37" stroke-width="2" marker-end="url(#arrowG)"/>
+  <rect x="263" y="65" width="130" height="32" rx="16" fill="#fff" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="328" y="86" text-anchor="middle" font-size="13" font-weight="600">클로드 앱</text>
+  <text x="410" y="85" font-size="11" fill="#aab0b8">send_message</text>
+  <rect x="40" y="107" width="170" height="32" rx="16" fill="#fff" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="125" y="128" text-anchor="middle" font-size="13" font-weight="600">코덱스 앱</text>
+  <path d="M215,123 L255,123" stroke="#1a7f37" stroke-width="2" marker-end="url(#arrowG)"/>
+  <rect x="263" y="107" width="130" height="32" rx="16" fill="#fff" stroke="#1a7f37" stroke-width="1.5"/>
+  <text x="328" y="128" text-anchor="middle" font-size="13" font-weight="600">코덱스 앱</text>
+  <text x="410" y="127" font-size="11" fill="#aab0b8">send_message_to_thread</text>
+
+  <!-- 구분선 -->
+  <text x="420" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#999">─────  다른 앱·터미널로 건너갈 때 — "질문·답만" (보내는 쪽에서 상대 대화방이 안 보이니까)  ─────</text>
+
+  <!-- Zone2a: 코덱스에 물어보기 (호박) -->
+  <rect x="20" y="200" width="780" height="140" rx="14" fill="#fdf4e8" stroke="#f0d5aa"/>
+  <text x="40" y="229" font-size="15" font-weight="700" fill="#b26a00">🟡 코덱스에 물어보기 — 기록에 남아 이어짐 (앱은 껐다 켜면 보임)</text>
+  <rect x="40" y="250" width="170" height="32" rx="16" fill="#fff" stroke="#d08a2c" stroke-width="1.5"/>
+  <text x="125" y="271" text-anchor="middle" font-size="13" font-weight="600">클로드 앱·CLI</text>
+  <path d="M215,266 L255,266" stroke="#b26a00" stroke-width="2" marker-end="url(#arrowA)"/>
+  <rect x="263" y="250" width="130" height="32" rx="16" fill="#fff" stroke="#d08a2c" stroke-width="1.5"/>
+  <text x="328" y="271" text-anchor="middle" font-size="13" font-weight="600">코덱스</text>
+  <text x="410" y="270" font-size="11" fill="#c8b48f">ask codex</text>
+  <rect x="40" y="292" width="170" height="32" rx="16" fill="#fff" stroke="#d08a2c" stroke-width="1.5"/>
+  <text x="125" y="313" text-anchor="middle" font-size="13" font-weight="600">코덱스 CLI</text>
+  <path d="M215,308 L255,308" stroke="#b26a00" stroke-width="2" marker-end="url(#arrowA)"/>
+  <rect x="263" y="292" width="130" height="32" rx="16" fill="#fff" stroke="#d08a2c" stroke-width="1.5"/>
+  <text x="328" y="313" text-anchor="middle" font-size="13" font-weight="600">코덱스</text>
+  <text x="410" y="312" font-size="11" fill="#c8b48f">ask codex</text>
+
+  <!-- Zone2b: 클로드에 물어보기 (회색) -->
+  <rect x="20" y="355" width="780" height="140" rx="14" fill="#f2f3f5" stroke="#d6dae0"/>
+  <text x="40" y="384" font-size="15" font-weight="700" fill="#5b6470">⚫ 클로드에 물어보기 — 사본이 답 · 원본엔 안 남음 · 한 번뿐</text>
+  <rect x="40" y="405" width="170" height="32" rx="16" fill="#fff" stroke="#9aa2ad" stroke-width="1.5"/>
+  <text x="125" y="426" text-anchor="middle" font-size="13" font-weight="600">클로드 CLI</text>
+  <path d="M215,421 L255,421" stroke="#5b6470" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrowK)"/>
+  <rect x="263" y="405" width="130" height="32" rx="16" fill="#fff" stroke="#9aa2ad" stroke-width="1.5"/>
+  <text x="328" y="426" text-anchor="middle" font-size="13" font-weight="600">클로드</text>
+  <text x="410" y="425" font-size="11" fill="#b3b9c0">ask claude (사본)</text>
+  <rect x="40" y="447" width="170" height="32" rx="16" fill="#fff" stroke="#9aa2ad" stroke-width="1.5"/>
+  <text x="125" y="468" text-anchor="middle" font-size="13" font-weight="600">코덱스 앱·CLI</text>
+  <path d="M215,463 L255,463" stroke="#5b6470" stroke-width="2" stroke-dasharray="6 3" marker-end="url(#arrowK)"/>
+  <rect x="263" y="447" width="130" height="32" rx="16" fill="#fff" stroke="#9aa2ad" stroke-width="1.5"/>
+  <text x="328" y="468" text-anchor="middle" font-size="13" font-weight="600">클로드</text>
+  <text x="410" y="467" font-size="11" fill="#b3b9c0">ask claude (사본)</text>
+
+</svg>

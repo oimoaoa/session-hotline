@@ -1,0 +1,37 @@
+<svg viewBox="0 0 720 562" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" role="img" aria-label="핫라인 사용 예시 — 기능 구현 방(내 방)의 사용자가 '설계 때 검토하다 접은 다른 방식을 왜 접었는지'가 기억 안 나 핫라인으로 물으면, 구현 방 클로드가 맥락을 붙여 설계 방 클로드에게 전하고(두 AI의 대화), 설계 방 클로드가 접은 B 방식과 택한 A 방식의 이유를 전문적으로 답하고, 그 답을 다시 내 방에서 쉽게 정리해 주는 흐름">
+  <rect width="720" height="562" rx="18" fill="#fafaf7"/>
+  <defs>
+    <marker id="dn" markerWidth="10" markerHeight="10" refX="4" refY="7" orient="auto"><path d="M1,1 L4,7 L7,1" fill="none" stroke="#7b8794" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  </defs>
+
+  <!-- Panel 1: 내 방 (파랑) — 나 질문(대충) → 구현 방 클로드 수락 -->
+  <rect x="40" y="20" width="640" height="152" rx="14" fill="#eef4fd" stroke="#a9c7f0"/>
+  <text x="62" y="47" font-size="14" font-weight="700" fill="#1a56db">🖥️ 기능 구현 방 <tspan font-weight="400" fill="#8a93a0">· 지금 내가 있는 방</tspan></text>
+  <text x="62" y="74" font-size="13.5" fill="#1a1a1a">🙋 나: 이 기능, 지금 방식으로 만들기로 한 건 아는데... 설계 때 다른</text>
+  <text x="82" y="95" font-size="13.5" fill="#1a1a1a">방식도 보다 접었잖아. 왜 접었는지 기억이 가물가물.</text>
+  <text x="62" y="122" font-size="13.5" font-weight="700" fill="#1a56db">⌨️ 핫라인 클로드 "설계 방"에 물어봐 그때 다른 방식 왜 접었었는지</text>
+  <text x="62" y="150" font-size="13.5" fill="#1a1a1a">🤖 클로드(구현 방): 알겠어, "설계 방"에 물어볼게.</text>
+
+  <!-- 화살표 1: 내려감 -->
+  <path d="M110,174 L110,212" stroke="#7b8794" stroke-width="1.8" marker-end="url(#dn)"/>
+  <text x="128" y="197" font-size="12.5" font-weight="600" fill="#5b6470">📞 AI가 맥락을 붙여 "설계 방"에 대신 물어봐요</text>
+
+  <!-- Panel 2: 옆 방 (초록) — 맥락 붙은 질문 도착 → 설계 방 클로드가 전문 답변 (AI↔AI) -->
+  <rect x="40" y="220" width="640" height="148" rx="14" fill="#eef7f0" stroke="#a9d8ba"/>
+  <text x="62" y="247" font-size="14" font-weight="700" fill="#1a7f37">💬 설계 방 <tspan font-weight="400" fill="#8a93a0">· 옆 방</tspan></text>
+  <text x="62" y="273" font-size="13.5" fill="#1a1a1a">🤖 클로드(구현 방): 지금 방식으로 구현 중인데, 그때 접은 다른 방식은 왜 접었지?</text>
+  <text x="62" y="295" font-size="13.5" fill="#1a1a1a">🧠 클로드(설계 방): 그때 검토한 B 방식은 초반 구축은 빨라도, 규모가</text>
+  <text x="82" y="317" font-size="13.5" fill="#1a1a1a">커지면 유지·확장에 손이 많이 가서 접었어. 지금 쓰는 A 방식은 초기가</text>
+  <text x="82" y="339" font-size="13.5" fill="#1a1a1a">무거운 대신 유지·확장이 안정적이라 택했고.</text>
+
+  <!-- 화살표 2: 돌아옴 -->
+  <path d="M110,370 L110,408" stroke="#7b8794" stroke-width="1.8" marker-end="url(#dn)"/>
+  <text x="128" y="393" font-size="12.5" font-weight="600" fill="#5b6470">📞 답을 받아, 이해하기 쉽게 정리해서 알려줘요</text>
+
+  <!-- Panel 3: 다시 내 방 (파랑) — 구현 방 클로드가 정리 -->
+  <rect x="40" y="416" width="640" height="126" rx="14" fill="#eef4fd" stroke="#a9c7f0"/>
+  <text x="62" y="443" font-size="14" font-weight="700" fill="#1a56db">🖥️ 기능 구현 방 <tspan font-weight="400" fill="#8a93a0">· 다시 내 방</tspan></text>
+  <text x="62" y="471" font-size="13.5" fill="#1a1a1a">🤖 클로드(구현 방): 설계 방에 물어보니 — 접은 B 방식은 처음엔 빨라도</text>
+  <text x="82" y="493" font-size="13.5" fill="#1a1a1a">나중에 유지가 번거로웠고, 지금 A 방식은 처음이 번거로운 대신 유지가</text>
+  <text x="82" y="515" font-size="13.5" fill="#1a1a1a">쉬워서 고른 거래. 그대로 가면 돼.</text>
+</svg>
