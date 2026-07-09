@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# pre-push 훅: 여러 clone(맥 2대 등)이 같은 GitHub main을 공유하므로,
+# main으로 push할 때 origin/main이 앞서 있으면(다른 쪽이 먼저 push) 막아서
+# 강제 덮어쓰기·이력 충돌 사고를 기계적으로 방지한다.
+#
+# 활성화(clone마다 1회): git config core.hooksPath .githooks
+# 비활성화: git config --unset core.hooksPath
+
+remote="${1:-origin}"
+
+# git이 stdin으로 push되는 ref들을 준다: <local ref> <local sha> <remote ref> <remote sha>
+# "지금 브랜치 이름"이 아니라 "원격 대상 ref가 main인가"로 검사한다
+# (그래야 `git push origin HEAD:main`처럼 다른 위치에서 main으로 미는 것도 잡는다).
+main_local_sha=""
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    main_local_sha="$local_sha"
+  fi
+done
+
+# main으로 미는 게 아니면 통과
+[ -z "$main_local_sha" ] && exit 0
+# main 브랜치 삭제(local sha가 전부 0) push는 이 검사 대상 아님 — 통과
+case "$main_local_sha" in *[!0]*) ;; *) exit 0 ;; esac
+
+echo "[pre-push] origin 최신 확인 (git fetch $remote main)..."
+if ! git fetch -q "$remote" main; then
+  echo "⛔ [pre-push] fetch 실패 (네트워크/인증?) — 안전을 위해 push 중단. 확인 후 다시 시도."
+  exit 1
+fi
+
+# origin/main(FETCH_HEAD)에 있고 push할 커밋에 없는 수 = 내가 뒤처진 정도
+behind="$(git rev-list --count "$main_local_sha..FETCH_HEAD" 2>/dev/null)"
+[ -z "$behind" ] && behind=0
+
+if [ "$behind" -gt 0 ]; then
+  echo ""
+  echo "⛔ [pre-push] 중단: origin/main 이 $behind 커밋 앞서 있습니다."
+  echo "   다른 clone이 먼저 push했어요."
+  echo "   → git pull 로 받아 합친 뒤 다시 push하세요. (force push 금지)"
+  echo ""
+  exit 1
+fi
+
+echo "[pre-push] ✅ origin과 동기 — push 진행합니다."
+exit 0
