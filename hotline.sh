@@ -41,11 +41,21 @@ assert_session_id() {
   esac
 }
 
-find_codex() {
-  # PATH 폴백: 비대화형 셸에서 codex 미검출 사례(crossval 실측) → 앱 번들 절대경로
+# codex 바이너리 탐색(공통) — PATH 우선, 없으면 앱 번들 후보 순회.
+# 2026-07-11 실측: 바이너리가 Codex.app → ChatGPT.app/Contents/Resources 로 이사(신규 우선·옛 경로도 유지=구버전 호환).
+# 성공 시 CODEX_BIN 설정하고 rc=0, 못 찾으면 rc=1 — die/warn 결정은 호출측 몫(doctor는 warn, ask는 die).
+resolve_codex_bin() {
   CODEX_BIN="${CODEX_BIN:-$(command -v codex || true)}"
-  [ -n "$CODEX_BIN" ] || CODEX_BIN=/Applications/Codex.app/Contents/Resources/codex
-  [ -x "$CODEX_BIN" ] || die "codex를 못 찾음 — Codex 설치 확인 또는 CODEX_BIN=경로 지정"
+  if [ -z "$CODEX_BIN" ]; then
+    for cand in "/Applications/ChatGPT.app/Contents/Resources/codex" "/Applications/Codex.app/Contents/Resources/codex"; do
+      [ -x "$cand" ] && { CODEX_BIN="$cand"; break; }
+    done
+  fi
+  [ -x "${CODEX_BIN:-}" ]
+}
+
+find_codex() {
+  resolve_codex_bin || die "codex를 못 찾음 — Codex 설치 확인 또는 CODEX_BIN=경로 지정"
 }
 
 find_claude() {
@@ -82,8 +92,14 @@ cmd_doctor() {
     warn "claude CLI 없음 — 대상=Claude 경로(CLI) 사용 불가"
   fi
 
-  if CODEX_BIN="${CODEX_BIN:-$(command -v codex || echo /Applications/Codex.app/Contents/Resources/codex)}"; [ -x "$CODEX_BIN" ]; then
-    ok "codex $($CODEX_BIN --version 2>&1 | head -1)"
+  if resolve_codex_bin; then
+    # 버전 줄만 추출 — 코덱스 앱 터미널에선 --version 앞에 PATH alias 경고가 붙어 head -1이 그걸 잡는다
+    # (실측 2026-07-12 리허설: 코덱스 3세션 다 "codex WARNING: ...PATH aliases..."로 표시됨). codex-cli 줄 우선, 못 찾으면 head -1 폴백.
+    local cver; cver="$($CODEX_BIN --version 2>&1 | grep -iE 'codex-cli|codex [0-9]' | head -1)"
+    [ -n "$cver" ] || cver="$($CODEX_BIN --version 2>&1 | head -1)"
+    # 앱 번들 폴백 경로에서 찾았으면 표시(다음에 또 이사하면 어느 경로인지 즉시 파악)
+    local cpath=""; case "$CODEX_BIN" in /Applications/*) cpath=" — $CODEX_BIN (앱 번들 폴백)";; esac
+    ok "codex $cver$cpath"
     local eh; eh="$($CODEX_BIN exec resume --help 2>&1)"
     echo "$eh" | grep -q -- --skip-git-repo-check && ok "codex exec resume --skip-git-repo-check" || bad "codex resume 플래그 소실 — Codex 업데이트로 깨졌을 수 있음"
     echo "$eh" | grep -qE -- '-c, --config|--config' && ok "codex -c(sandbox_mode 오버라이드)" || bad "codex -c 플래그 소실"
@@ -99,7 +115,7 @@ cmd_doctor() {
 
   if [ "$fail" -ne 0 ]; then
     echo "" >&2
-    echo "HOTLINE-ERROR: 필수 점검 실패. Claude Code/Codex 업데이트로 내부 포맷·플래그가 바뀌어 깨졌을 수 있다(네 잘못 아님). 검증 기준: 2026-07-08, claude 2.1.203 / codex 0.142.5, macOS 전용." >&2
+    echo "HOTLINE-ERROR: 필수 점검 실패. Claude Code/Codex 업데이트로 내부 포맷·플래그가 바뀌어 깨졌을 수 있다(네 잘못 아님). 검증 기준: 2026-07-11, claude 2.1.206 / codex 0.144.0-alpha.4, macOS 전용." >&2
     exit 1
   fi
 }

@@ -44,10 +44,15 @@ argument-hint: "[클로드|코덱스] [세션제목 또는 id] [질문]"
 
 ## 2. 대상 세션 해석 + echo-back 확인 (필수 — 생략 금지)
 
-- **id 직접지정이 primary** — 사용자가 UUID/id를 주면 그걸 쓴다. 이름은 convenience.
+- **id 직접지정이 primary** — 사용자가 UUID/id를 주면 이름 검색을 건너뛰고 그걸 쓴다. 이름은 convenience.
+- **세션 ID로 지정하기 (id만 줘도 됨)** — 인계·핸드오프 문서에 적어둔 세션 주소(id)를 그대로 줘도 작동한다. **ID를 받으면 → resolve로 세션명을 역조회 → echo-back "이 대화방 맞아?" 확인 → 전송**(ID만으로 조용히 쏘지 말 것 — 붙여넣은 주소가 낡거나 오타일 수 있다). 3종 ID 전부 resolve가 세션명을 역조회한다(실측):
+    - **클로드 `local_…`** (데스크탑 send_message 주소): `resolve claude "local_…"` → 세션명·uuid·cwd. **데스크탑 클로드 대상 발송의 주 경로**(사용자는 보통 이 주소를 준다).
+    - **클로드 UUID** (`xxxxxxxx-…`, jsonl 파일명): `resolve claude "<UUID>"` → 세션명·**local_id**·cwd. resolve가 local_id로 변환해주니 UUID만 알아도 send_message 발송 가능.
+    - **코덱스 `019f…`** (threadId): `resolve codex "019f…"` → 세션명·rollout.
 - **verbatim 규칙(중요 — 실사고 2건)**: resolve에 넘기는 대화방 이름은 사용자가 준 문자열 **그대로**. 단어를 떼거나(앞의 주제어처럼 보여도!) 바꾸거나 줄이지 않는다. 사용자가 따옴표(`'…'`·`"…"`·`「…」`)로 감쌌으면 그 안쪽이 이름(도구가 따옴표는 알아서 벗김).
 - CLI 경로: `bash "$HOTLINE" resolve claude "<제목|UUID>"` 또는 `resolve codex "<이름|ID>"` — 출력은 `{match_type, candidates, suggestions}`:
   - `match_type`: exact(완전일치) / substring(부분일치) / token(단어 전부 포함) / uuid / none. **부분·token 매칭이어도 echo-back 확인은 동일하게 필수.**
+  - ⚠️ **rc(0/1/2)는 실패 신호가 아니라 후보 *개수* 신호다** — resolve를 `set -e`나 `&&` 체인 안에서 부르면 rc=2(복수 후보)를 에러로 오인해 멈춘다(2026-07-12 리허설: 여러 세션이 실제로 오해). rc를 변수로 받아 분기하라.
   - rc=0(1건): echo-back 확인으로. `match_type`이 exact가 아니면 그 사실도 언급("부분일치로 찾음").
   - rc=1(0건): `suggestions`(비슷한 후보)가 있으면 "혹시 이거?"로 제시, 없으면 "못 찾음" 정직 보고. **임의로 단어를 바꿔 재검색하지 않는다** — 순서는 ①사용자 원문 재확인 ②suggestions 제시뿐.
   - rc=2(복수): 후보 전부 보여주고 고르게 한다. **완전히 같은 제목이 여러 개**면 보통 이어하기·요약으로 기록 파일이 갈라진 것 — 최신 수정본이 현재 대화방일 가능성이 높다고 안내하고 사용자 확인.
@@ -56,8 +61,9 @@ argument-hint: "[클로드|코덱스] [세션제목 또는 id] [질문]"
 - **다중 발송**(여러 방에 동시): 기본은 **한 방 택1**(echo-back 확인). 사용자가 **명시적으로** "여러 방에/다 물어봐"라고 할 때만 대상 전부를 echo-back으로 나열해 확인받고 **각각 전송**한다(send_message·ask는 방마다 한 번씩, 각 전송은 개별 승인 게이트). 사용자가 다중을 요청하지 않았는데 이름이 복수로 매치되면 임의로 다 보내지 말고 택1 확인.
 - **grep/rg로 대화방을 찾지 않는다** — 본문에 문자열이 나온 것과 제목인 것은 다르다(실사고: 엉뚱한 세션 fork까지 감). echo-back 제목이 사용자가 말한 이름과 다르면 **중단**.
 - **자동 생성 제목도 이제 resolve로 찾힌다**(2026-07-06 해결): `resolve claude`가 데스크탑 앱 저장소를 병합 검색해 자동 제목·`local_id`(send_message 주소)·보관 여부까지 제공한다. Codex 자동 이름도 원래 찾힘(session_index). 출력의 `resumable: false`면 CLI resume 불가(기록 파일 미확인) — echo-back에 표시. 데스크탑 저장소가 없는 환경에선 자동 제목만 못 찾는다(doctor가 알려줌) — 그땐 "제목 한 번 수정해주면 찾을 수 있어요" 안내.
+- **이름 없는 세션(터미널에서 제목 안 지은 세션) — 폴더명+미리보기로 확인**: 저장된 제목이 없어 이름 검색이 0건인 세션이다(터미널 유저에게 흔함 — 데스크탑 앱은 자동 제목이 붙어 덜함). 이때 `resolve claude`가 자동으로 **cwd 폴더명 매칭**으로 폴백한다(`match_type: "cwd"`) — 후보에 `display_name`(폴더명)·`preview`(첫 메시지 60자)가 실린다. **echo-back에 폴더명+preview를 보여주고 확인받는다**(제목이 없으니 이 둘이 유일한 단서 — CLI `/resume` 피커가 폴더명으로 보여주는 것과 같은 방식). `cwd_truncated`가 0보다 크면(=그 값이 **생략된 세션 수**, "총 개수"가 아님) "그 폴더에 세션이 더 있어 — 최근 8개만 보여줬고 N개는 생략됐어, 더 좁혀줄래?"라고 안내(한 폴더에 세션이 몰릴 수 있음). ⚠️ preview는 **표시·확인용일 뿐 매칭 키가 아니다**(본문 grep 금지 원칙 유지 — 쿼리는 폴더명에만 매칭). 보관(archived)·삭제 세션은 폴백에서 제외된다. (Codex는 스레드 이름이 항상 있어 이 문제가 없다 — Claude 전용 처리.)
 - **내 제목 알아내기**(템플릿 서명용): `bash "$HOTLINE" resolve claude "$CLAUDE_CODE_SESSION_ID"` — 내 세션의 현재 제목이 나온다(실측). Codex 앱이면 자기 threadId를 안다.
-- **나=데스크탑 클로드 & 대상=Claude면 `list_sessions`(MCP)가 유일한 1차 검색원** — resolve(jsonl 파서)로 먼저 찾지 마라. 이유 둘: ①send_message의 `local_…` id는 파일명 UUID와 완전 별개 체계 ②**자동 생성 제목은 list_sessions엔 보이지만 jsonl엔 없다**(실사고: resolve로 먼저 찾다 0건 — list_sessions엔 있었음). resolve는 CLI 경로(코덱스 대상·fork 자문)에서만.
+- **나=데스크탑 클로드 & 대상=Claude, 이름으로 검색할 때는 `list_sessions`(MCP)가 1차 검색원** — resolve(jsonl 파서)로 먼저 찾지 마라. 이유 둘: ①send_message의 `local_…` id는 파일명 UUID와 완전 별개 체계 ②**자동 생성 제목은 list_sessions엔 보이지만 jsonl엔 없다**(실사고: resolve로 먼저 찾다 0건 — list_sessions엔 있었음). **단 사용자가 ID(`local_…`·UUID)를 준 경우는 예외** — `resolve claude "<id>"`가 세션명·local_id·cwd를 정확히 역조회하므로(실측) resolve를 쓴다(이름의 모호성이 없어 역조회가 더 정확·빠름). resolve는 그 외 CLI 경로(코덱스 대상·fork 자문)에서.
 - **echo-back 확인(찾은 세션 정보를 사용자에게 되읽어 확인받기 — 1건이어도 필수)**: `→ 이 세션 맞아? 제목:"…" / id:앞8자 / cwd:… / 마지막 수정:…` — 사용자 확인 후에만 전송. **대상이 Codex면 한 줄 추가**: "질문·답변이 그 세션의 내부 기록에 append돼(fork 불가). 단 Codex 앱 화면엔 바로 안 보일 수 있고, 앱을 껐다 켜야 보일 수 있어(실측)." **대상이 Claude이고 CLI 경로면 한 줄 추가**: "원본 세션에 메시지를 남기지 않고 read-only 분신(fork)이 답하는 방식이야 — 원본 화면엔 안 보여. 이대로 진행할까?" **유사 제목 세션**(예: "X"와 "X 2")이 목록에 보이면 echo-back 확인에 그 존재도 함께 표시해 오지목을 차단(실사용에서 실제로 느껴진 리스크).
 - 해석 결과의 mtime이 최근(~10분)이면: "그 세션이 지금 열려있을 수 있어 — Codex 대상은 원본 기록에 append돼서 충돌 위험 있음(Claude 대상은 fork라 안전). 진행할까?" 확인.
 
@@ -145,6 +151,6 @@ Claude Code "{내 대화방 제목}" 대화방에서 질문이 도착했어요. 
 - **재귀 차단**: CLI 경로는 env sentinel로 하드 차단. send_message 경로는 프롬프트 문구가 유일한 방어(env 미전파).
 - **send_message 회신은 비보장**: 회신엔 ⓐ 수신 세션이 회신을 *결정*하고 ⓑ 사용자가 그 회신 전송을 *승인*하는 두 조건이 필요하다 — 둘 중 하나라도 빠지면 회신이 안 올 수 있다는 뜻(이게 "비보장"). **단 도달·깨우기 자체는 확실**: 닫힌·dormant(과거) 세션에도 도달해 깨우고 응답시킨다(실측 2026-07-07 — 3일 전 세션·과거 세션 모두 깨어나 회신).
 - **큰 세션 비용**: 12MB 세션 15초 실측(hang 없음). 단 대형 컨텍스트 추론 요금이 든다 — 아주 큰 세션이면 사용자에게 미리 언급.
-- **macOS 전용 + 비공식 내부 포맷 의존**: `~/.claude/projects`·`customTitle`·`session_index.jsonl`·resume 플래그는 공식 API가 아니다. CLI 업데이트로 깨질 수 있고, 그때 doctor가 잡는다. 검증 기준: 2026-07-08 · claude 2.1.203 · codex 0.142.5.
+- **macOS 전용 + 비공식 내부 포맷 의존**: `~/.claude/projects`·`customTitle`·`session_index.jsonl`·resume 플래그는 공식 API가 아니다. CLI 업데이트로 깨질 수 있고, 그때 doctor가 잡는다. 검증 기준: 2026-07-11 · claude 2.1.206 · codex 0.144.0-alpha.4.
 - **customTitle 없는 Claude 세션**은 이름으로 못 찾는다 — id로 우회. **다른 컴퓨터의 세션**은 범위 밖(세션 파일은 로컬 저장).
 - **이름해석 성능**: `resolve claude`는 모든 세션 파일을 훑는다(마지막 customTitle 판별에 구조상 필요) — 세션이 많고 크면 수 초 걸릴 수 있다. 급하면 id 직접지정이 빠르다.

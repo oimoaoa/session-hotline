@@ -212,7 +212,7 @@ rm -rf ~/.session-hotline ~/.claude/skills/session-hotline ~/.codex/skills/sessi
 
 공개 직전 실환경에서 자가진단(doctor)까지 통과 확인한 버전이에요:
 
-- Claude Code `2.1.203` · Codex `0.142.5` · Python `3.14.6` · macOS
+- Claude Code `2.1.206` · Codex `0.144.0-alpha.4` · Python `3.14.6` · macOS
 - 기준일: 2026-07-08
 
 > **doctor가 뭐예요**? 상주 프로그램이 아니라 `hotline.sh`에 든 **1초짜리 점검 기능**이에요. 설치 직후와 스킬을 처음 쓸 때(또는 뭔가 이상할 때)만 돌아서, 필요한 도구·기능이 다 있는지 확인하고 결과만 보여줘요. 앱 업데이트로 내부 구조가 바뀌면 여기서 잡아줘요.
